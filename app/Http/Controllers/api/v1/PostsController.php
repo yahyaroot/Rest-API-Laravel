@@ -87,6 +87,69 @@ class PostsController extends Controller
             ], 401);
         }
     }
+
+    public function update(Request $request)
+    {
+        //validate data
+        $validator = Validator::make($request->all(), [
+            'title'     => 'required',
+            'content'   => 'required',
+        ],
+            [
+                'title.required' => 'Masukkan Title Post !',
+                'content.required' => 'Masukkan Content Post !',
+            ]
+        );
+
+        if($validator->fails()) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Silahkan Isi Bidang Yang Kosong',
+                'data'    => $validator->errors()
+            ],401);
+
+        } else {
+
+            $post = Post::whereId($request->input('id'))->update([
+                'title'     => $request->input('title'),
+                'content'   => $request->input('content'),
+            ]);
+
+            if ($post) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Post Berhasil Diupdate!',
+                ], 200);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Post Gagal Diupdate!',
+                ], 401);
+            }
+
+        }
+
+    }
+
+    public function destroy($id)
+    {
+        $post = Post::findOrFail($id);
+        $post->delete();
+
+        if ($post) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Post Berhasil Dihapus!',
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Post Gagal Dihapus!',
+            ], 400);
+        }
+
+    }
     
 
     }
